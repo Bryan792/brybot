@@ -27,10 +27,14 @@ module.exports = (robot) ->
 
         $ = cheerio.load body
 
+        validFor = $ 'h2'
+          .first()
+          .text()
+
         # Adapted from https://github.com/chadrien/hots-irc-bot
         heroes = $ 'button.btn:not(.dropdown-toggle)'
           .map (i, e) -> e.children[0].data
           .slice 0, 7
           .get()
 
-        robotResponse.send 'This week\'s heroes are: ' + heroes.join ', '
+        robotResponse.send "#{validFor}: #{heroes.join ', '}"
