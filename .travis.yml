@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '0.10'
+after_success:
+- chmod 600 ~/.ssh/deploy_key
+- echo -e "bigboyz.exposed,128.199.85.68 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDed/ECVQLAybs20p3PlhA2Iyz0LbOmbt9vUFVI0Ex1G//wI9qzUs5Tvdt0XeUh0uLeq+8dmGs4CT8HREK2VYPzSDo1Ekvhd/C7ls5TDzLUDV0xlMzQQcJ6t8l6pCTDi8GGe2BQVzvufM4AQl5pt0uPkR5PgYjoTu+u2WAcWKu3bH28WgLWz/ynupLaB4yM8EuEhclfAcShfUygWDobfZoaj+Pa1/a7sB9vlk5DuKCNUQYYiExLUZBnqAqh9EVDprvrVl+z/W/EoOcd2GEFiolIgdsFvHCKrwveebMy2nkmm0oGXnpA4kOKrddb8nov01YylvHBXb7H2FWHjTIkJUoD" >> ~/.ssh/known_hosts
+- echo -e "Host bigboyz.exposed\n\tIdentityFile ~/.ssh/deploy_key\n\tIdentitiesOnly yes\n" >> ~/.ssh/config
+- git remote add deploy dokku@bigboyz.exposed:badbot
+- git push deploy master
+before_install:
+- openssl aes-256-cbc -K $encrypted_c3932e38e2bb_key -iv $encrypted_c3932e38e2bb_iv
+  -in .travis/deploy_key.enc -out ~/.ssh/deploy_key -d
