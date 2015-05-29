@@ -15,6 +15,7 @@
     "hubot-redis-brain": "0.0.2",
     "hubot-scripts": "^2.5.16",
     "hubot-slack": "^3.3.0",
+    "lodash": "^3.9.3",
     "request": "^2.55.0"
   },
   "peerDependencies": {},

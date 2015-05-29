@@ -8,22 +8,26 @@
 #   "request": "^2.55.0"
 #
 # Commands:
-#   hubot rotation - fetches the current rotation
+#   hubot hots rotation - fetches the current rotation
+#   hubot hots mmr (number) - fetches the MMR of the given player ID
 #
 # Author:
 #   frio
 
 cheerio = require 'cheerio'
 request = require 'request'
+_       = require 'lodash'
 
 module.exports = (robot) ->
 
-  robot.respond /rotation/i, (robotResponse) ->
+  robot.respond /hots rotation/i, (robotResponse) ->
 
     request 'http://heroesofthestorm.github.io/free-hero-rotation', (err, httpResponse, body) ->
+
         if err
           robot.logger.error err
           robotResponse.send 'I\'m sorry, something went wrong :('
+          return
 
         $ = cheerio.load body
 
@@ -37,4 +41,23 @@ module.exports = (robot) ->
           .slice 0, 7
           .get()
 
-        robotResponse.send "#{validFor}: #{heroes.join ', '}"
+        robotResponse.send "#{ validFor }: #{ heroes.join ', ' }"
+
+  robot.respond /hots mmr (\d+)/i, (robotResponse) ->
+
+    id = robotResponse.match[1]
+
+    request "https://www.hotslogs.com/API/Players/#{id}", (err, httpResponse, body) ->
+
+      if err
+        robot.logger.error err
+        robotResponse.send 'I\'m sorry, something went wrong :('
+        return
+
+      stats = JSON.parse body
+
+      name = stats.Name
+      mmrs = _.map stats.LeaderboardRankings, (val) ->
+        return "#{ val.CurrentMMR } (#{ val.GameMode })"
+
+      robotResponse.send "#{ name }: #{ mmrs.join ', ' }"
