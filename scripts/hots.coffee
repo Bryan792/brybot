@@ -9,7 +9,9 @@
 #
 # Commands:
 #   hubot hots rotation - fetches the current rotation
-#   hubot hots mmr (number) - fetches the MMR of the given player ID
+#   hubot hots mmr <id> - fetches the MMR of the given player ID
+#   hubot hots mmr - fetches the MMR of the requesting user, given they've registered it
+#   hubot hots register <id> - remembers the requesting user's hotslogs ID
 #
 # Author:
 #   frio
@@ -19,6 +21,23 @@ request = require 'request'
 _       = require 'lodash'
 
 module.exports = (robot) ->
+
+  fetchMMR = (id, robotResponse) ->
+    request "https://www.hotslogs.com/API/Players/#{id}", (err, httpResponse, body) ->
+
+      if err
+        robot.logger.error err
+        robotResponse.send 'I\'m sorry, something went wrong :('
+        return
+
+      stats = JSON.parse body
+
+      name = stats.Name
+      mmrs = _.map stats.LeaderboardRankings, (val) ->
+        return "#{ val.CurrentMMR } (#{ val.GameMode })"
+
+      robotResponse.send "#{ name } -- #{ mmrs.join ', ' }"
+
 
   robot.respond /hots rotation/i, (robotResponse) ->
 
@@ -43,21 +62,30 @@ module.exports = (robot) ->
 
         robotResponse.send "#{ validFor }: #{ heroes.join ', ' }"
 
+
   robot.respond /hots mmr (\d+)/i, (robotResponse) ->
 
     id = robotResponse.match[1]
+    fetchMMR id, robotResponse
 
-    request "https://www.hotslogs.com/API/Players/#{id}", (err, httpResponse, body) ->
 
-      if err
-        robot.logger.error err
-        robotResponse.send 'I\'m sorry, something went wrong :('
-        return
+  robot.respond /hots mmr/i, (robotResponse) ->
 
-      stats = JSON.parse body
+    user = robot.brain.userForId robotResponse.message.user.id
+    id = user.hotsLogsId
 
-      name = stats.Name
-      mmrs = _.map stats.LeaderboardRankings, (val) ->
-        return "#{ val.CurrentMMR } (#{ val.GameMode })"
+    if id?
+      fetchMMR id, robotResponse
+    else
+      robotResponse.reply 'Sorry, your ID isn\'t registered. Please register your ID with `hots register <id>`, where your ID is the numeric ID for your hotslogs profile.'
 
-      robotResponse.send "#{ name }: #{ mmrs.join ', ' }"
+
+  robot.respond /hots register (\d+)/i, (robotResponse) ->
+
+    hotsLogsId = robotResponse.match[1]
+
+    user = robot.brain.userForId robotResponse.message.user.id,
+      name: robotResponse.message.user.name
+
+    user.hotsLogsId = hotsLogsId
+    robotResponse.reply "assigned #{ hotsLogsId } as your hotslogs id"
