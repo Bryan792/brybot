@@ -9,7 +9,7 @@
 #
 # Commands:
 #   hubot hots rotation - fetches the current rotation
-#   hubot hots mmr <id> - fetches the MMR of the given player ID
+#   hubot hots mmr <username> - fetches the MMR of the given player
 #   hubot hots mmr - fetches the MMR of the requesting user, given they've registered it
 #   hubot hots register <id> - remembers the requesting user's hotslogs ID
 #
@@ -63,19 +63,23 @@ module.exports = (robot) ->
         robotResponse.send "#{ validFor }: #{ heroes.join ', ' }"
 
 
-  robot.respond /hots mmr (\d+)/i, (robotResponse) ->
+  robot.respond /hots mmr( [\w\d]+)?/i, (robotResponse) ->
 
-    id = robotResponse.match[1]
-    fetchMMR id, robotResponse
+    username = robotResponse.match[1]?.trim()
+    if username?
+      user = robot.brain.usersForFuzzyName(username)[0]
+      if not user?
+        robotResponse.reply "Sorry, I don\'t know who #{ username } is :("
+        return
+    else
+      user = robot.brain.userForId robotResponse.message.user.id
 
-
-  robot.respond /hots mmr/i, (robotResponse) ->
-
-    user = robot.brain.userForId robotResponse.message.user.id
     id = user.hotsLogsId
 
     if id?
       fetchMMR id, robotResponse
+    else if username?
+      robotResponse.reply "Sorry, #{ username } hasn't registered their hotslogs ID.  Bully them until they do."
     else
       robotResponse.reply 'Sorry, your ID isn\'t registered. Please register your ID with `hots register <id>`, where your ID is the numeric ID for your hotslogs profile.'
 
