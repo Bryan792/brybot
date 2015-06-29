@@ -20,9 +20,9 @@ module.exports = (robot) ->
 
   robot.respond /kfc rotation/i, (robotResponse) ->
 
-    request 'http://www.kfc.co.nz/coupons/', (err, httpResponse, body) ->
+    robotResponse.reply 'Checking the KFC rotation (http://www.kfc.co.nz/coupons/)'
 
-      robotResponse.reply 'Checking the KFC rotation (http://www.kfc.co.nz/coupons/)'
+    request 'http://www.kfc.co.nz/coupons/', (err, httpResponse, body) ->
 
       if err
         robot.logger.error err
