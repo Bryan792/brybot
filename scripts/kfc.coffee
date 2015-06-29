@@ -24,20 +24,20 @@ module.exports = (robot) ->
 
       robotResponse.reply 'Checking the KFC rotation (http://www.kfc.co.nz/coupons/)'
 
-        if err
-          robot.logger.error err
-          robotResponse.send 'I\'m sorry, something went wrong :('
-          return
+      if err
+        robot.logger.error err
+        robotResponse.send 'I\'m sorry, something went wrong :('
+        return
 
-        $ = cheerio.load body
+      $ = cheerio.load body
 
-        deals = $ 'div.coupon:not(.want-more)'
-          .map (i, element) ->
-            price: $(element).find('div.price').text().trim()
-            name: $(element).find('div.description > h2').text().trim()
-            items: $(element).find('div.description > span').text().trim().replace(/(\r\n|\n|\r)/gm, ', ')
+      deals = $ 'div.coupon:not(.want-more)'
+        .map (i, element) ->
+          price: $(element).find('div.price').text().trim()
+          name: $(element).find('div.description > h2').text().trim()
+          items: $(element).find('div.description > span').text().trim().replace(/(\r\n|\n|\r)/gm, ', ')
 
-        _ deals
-          .sortBy 'price'
-          .each (deal) -> robotResponse.send "#{ deal.name }: #{ deal.price } (#{ deal.items })"
-          .value()
+      _ deals
+        .sortBy 'price'
+        .each (deal) -> robotResponse.send "#{ deal.name }: #{ deal.price } (#{ deal.items })"
+        .value()
