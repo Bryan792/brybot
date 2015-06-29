@@ -22,6 +22,8 @@ module.exports = (robot) ->
 
     request 'http://www.kfc.co.nz/coupons/', (err, httpResponse, body) ->
 
+      robotResponse.reply 'Checking the KFC rotation (http://www.kfc.co.nz/coupons/)'
+
         if err
           robot.logger.error err
           robotResponse.send 'I\'m sorry, something went wrong :('
