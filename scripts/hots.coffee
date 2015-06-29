@@ -63,9 +63,9 @@ module.exports = (robot) ->
         robotResponse.send "#{ validFor }: #{ heroes.join ', ' }"
 
 
-  robot.respond /hots mmr( [\w\d]+)?/i, (robotResponse) ->
+  robot.respond /hots mmr( \@[\w\d]+)?$/i, (robotResponse) ->
 
-    username = robotResponse.match[1]?.trim()
+    username = robotResponse.match[1]?.trim().slice(1)
     if username?
       user = robot.brain.usersForFuzzyName(username)[0]
       if not user?
