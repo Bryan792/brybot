@@ -65,19 +65,15 @@ module.exports = (robot) ->
 
   robot.respond /hots mmr( \@[\w\d]+)?$/i, (robotResponse) ->
 
-    username = robotResponse.match[1]?.trim().slice(1)
-    if username?
-      user = robot.brain.usersForFuzzyName(username)[0]
-      if not user?
-        robotResponse.reply "Sorry, I don\'t know who #{ username } is :("
-        return
-    else
-      user = robot.brain.userForId robotResponse.message.user.id
+    username = robotResponse.match[1]?.trim().slice(1) || robotResponse.message.user.name
+    user = robot.brain.usersForFuzzyName(username)[0]
 
-    id = user.hotsLogsId
+    if not user?
+      robotResponse.reply "Sorry, I don\'t know who #{ username } is :("
+      return
 
-    if id?
-      fetchMMR id, robotResponse
+    if user.hotsLogsId?
+      fetchMMR user.hotsLogsId, robotResponse
     else if username?
       robotResponse.reply "Sorry, #{ username } hasn't registered their hotslogs ID.  Bully them until they do."
     else
