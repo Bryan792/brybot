@@ -4,6 +4,7 @@
 # Dependencies:
 #   "cheerio": "^0.19.0"
 #   "request": "^2.55.0"
+#   "lodash": "^3.9.3"
 #
 # Commands:
 #   hubot kfc rotation
