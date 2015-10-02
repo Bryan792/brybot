@@ -70,6 +70,22 @@ module.exports = function(robot) {
     }
     return mopidy.playback.getCurrentTrack().done(printCurrentTrack, console.error.bind(console));
   });
+  
+  robot.respond(/what'?s next/i, function(message) {
+    var printNextTrack;
+    if (online) {
+      printNextTrack = function(tl_track) {
+        if (tl_track) {
+          return message.send("Next song is: " + constructTrackDesc(tl_track.track));
+        } else {
+          return message.send("There is no next song");
+        }
+      };
+    } else {
+      message.send('Mopidy is offline');
+    }
+    return mopidy.tracklist.eotTrack().done(printNextTrack, console.error.bind(console));
+  });
 
   robot.respond(/next track/i, function(message) {
     var printCurrentTrack;
