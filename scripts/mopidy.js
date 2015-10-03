@@ -70,21 +70,32 @@ module.exports = function(robot) {
     }
     return mopidy.playback.getCurrentTrack().done(printCurrentTrack, console.error.bind(console));
   });
-  
+
   robot.respond(/what'?s next/i, function(message) {
+    var findCurrentTrack;
     var printNextTrack;
+
     if (online) {
-      printNextTrack = function(tl_track) {
-        if (tl_track) {
-          return message.send("Next song is: " + constructTrackDesc(tl_track.track));
+      findCurrentTrack = function(Tltrack) {
+        if (Tltrack) {
+          return mopidy.tracklist.eotTrack(Tltrack).done(printNextTrack, console.error.bind(console));
         } else {
-          return message.send("There is no next song");
+          return message.send("No next song");
         }
       };
+
+      printNextTrack = function(Tltrack) {
+        if (Tltrack) {
+          return message.send("Next track: " + constructTrackDesc(Tltrack.track));
+        } else {
+          return message.send("No next song");
+        }
+      };
+
     } else {
       message.send('Mopidy is offline');
     }
-    return mopidy.tracklist.eotTrack().done(printNextTrack, console.error.bind(console));
+    return mopidy.playback.getCurrentTlTrack().done(findCurrentTrack, console.error.bind(console));
   });
 
   robot.respond(/next track/i, function(message) {
@@ -93,7 +104,7 @@ module.exports = function(robot) {
       mopidy.playback.next();
       printCurrentTrack = function(track) {
         if (track) {
-          return message.send("Now playing: " + track.name + " by " + track.artists[0].name + " from " + track.album.name);
+          return message.send("Now playing: " + constructTrackDesc(track));
         } else {
           return message.send("No track is playing");
         }
