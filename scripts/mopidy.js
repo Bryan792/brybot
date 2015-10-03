@@ -84,7 +84,7 @@ module.exports = function(robot) {
     } else {
       message.send('Mopidy is offline');
     }
-    return mopidy.tracklist.eotTrack().done(printNextTrack, console.error.bind(console));
+    return mopidy.tracklist.eotTrack(mopidy.playback.getCurrentTlTrack()).done(printNextTrack, console.error.bind(console));
   });
 
   robot.respond(/next track/i, function(message) {
