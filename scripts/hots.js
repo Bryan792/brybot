@@ -66,15 +66,7 @@ module.exports = function(robot) {
         });
   });
 
-  robot.respond(/hots mmr( \@[\w\d]+)?$/i, function(robotResponse) {
-    var ref, user, username;
-    username = (ref = robotResponse.match[1]) != null ? ref.trim().slice(1) : void 0;
-    if (username) {
-      user = robot.brain.usersForFuzzyName(username)[0];
-    } else {
-      user = robot.brain.userForId(robotResponse.message.user.id);
-      username = user.name;
-    }
+  var replyUserMMR = function(robotResponse, user, username) {
     if (user == null) {
       robotResponse.reply("Sorry, I don\'t know who " + username + " is :(");
       return;
@@ -86,23 +78,25 @@ module.exports = function(robot) {
     } else {
       return robotResponse.reply('Sorry, your ID isn\'t registered. Please register your ID with `hots register <id>`, where your ID is the numeric ID for your hotslogs profile.');
     }
+  }
+
+  robot.respond(/hots mmr$/i, function(robotResponse) {
+    var user = robot.brain.userForId(robotResponse.message.user.id); 
+    return replyUserMMR(robotResponse, user, user.name);
   });
 
-  robot.respond(/hots mmr <(\@[\d]+)?>$/i, function(robotResponse) {
+  robot.respond(/hots mmr (\@[\w\d]+)$/i, function(robotResponse) {
+    var user, username;
+    username = robotResponse.match[1];
+    user = robot.brain.usersForFuzzyName(username)[0];
+    return replyUserMMR(robotResponse, user, username);
+  });
+
+  robot.respond(/hots mmr <\@([\d]+)?>$/i, function(robotResponse) {
     var ref, user, username;
-    username = ((ref = robotResponse.match[1]) != null ? ref.trim().slice(1) : void 0) || robotResponse.message.user.name;
+    username = robotResponse.match[1];
     user = robot.brain.userForId(username);
-    if (user == null) {
-      robotResponse.reply("Sorry, I don\'t know who " + username + " is :(");
-      return;
-    }
-    if (user.hotsLogsId != null) {
-      return fetchMMR(user.hotsLogsId, robotResponse);
-    } else if (username != null) {
-      return robotResponse.reply("Sorry, " + username + " hasn't registered their hotslogs ID.  Bully them until they do.");
-    } else {
-      return robotResponse.reply('Sorry, your ID isn\'t registered. Please register your ID with `hots register <id>`, where your ID is the numeric ID for your hotslogs profile.');
-    }
+    return replyUserMMR(robotResponse, user, username);
   });
 
   robot.respond(/hots mmr (\d+)/i, function(robotResponse) {
