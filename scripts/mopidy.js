@@ -72,19 +72,17 @@ module.exports = function(robot) {
   });
 
   robot.respond(/what'?s next/i, function(message) {
-    var findCurrentTrack;
-    var printNextTrack;
-
     if (online) {
-      findCurrentTrack = function(Tltrack) {
+      var printNextTrack = function(Tltrack) {
         if (Tltrack) {
-          return mopidy.tracklist.eotTrack(Tltrack).done(printNextTrack, console.error.bind(console));
+          return mopidy.tracklist.eotTrack(Tltrack).done(printTrackAsNext, console.error.bind(console));
         } else {
+          //No current song
           return message.send("No next song");
         }
       };
 
-      printNextTrack = function(Tltrack) {
+      var printNextTrackAsNext = function(Tltrack) {
         if (Tltrack) {
           return message.send("Next track: " + constructTrackDesc(Tltrack.track));
         } else {
@@ -95,7 +93,7 @@ module.exports = function(robot) {
     } else {
       message.send('Mopidy is offline');
     }
-    return mopidy.playback.getCurrentTlTrack().done(findCurrentTrack, console.error.bind(console));
+    return mopidy.playback.getCurrentTlTrack().done(printNextTrack, console.error.bind(console));
   });
 
   robot.respond(/next track/i, function(message) {
