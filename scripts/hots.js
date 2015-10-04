@@ -138,4 +138,8 @@ module.exports = function(robot) {
     user.hotsLogsId = hotsLogsId;
     return robotResponse.reply("assigned " + hotsLogsId + " as " + user.name + " hotslogs id");
   });
+
+  robot.respond(/hots builds (.*)/i, function(robotResponse) {
+    return robotResponse.reply("http://www.hotsbuilds.info/" + robotResponse.match[1]);
+  });
 };
