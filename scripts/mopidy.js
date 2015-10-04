@@ -82,7 +82,7 @@ module.exports = function(robot) {
         }
       };
 
-      var printNextTrackAsNext = function(Tltrack) {
+      var printTrackAsNext = function(Tltrack) {
         if (Tltrack) {
           return message.send("Next track: " + constructTrackDesc(Tltrack.track));
         } else {
