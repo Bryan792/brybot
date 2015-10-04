@@ -192,6 +192,7 @@ module.exports = function(robot) {
     var desc = "";
     if (track.name) desc += track.name;
     if (track.artists && track.artists[0].name) desc += " by " + track.artists[0].name;
+    if (track.album && track.album.name) desc += " from " + track.album.name;
     return desc;
   }
 };
