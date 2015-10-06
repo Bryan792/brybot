@@ -16,6 +16,8 @@ mopidy.on('state:offline', function() {
   return online = false;
 });
 
+//mopidy.on(console.log.bind(console));
+
 module.exports = function(robot) {
 
   mopidy.on("event:trackPlaybackStarted", function() {
@@ -99,7 +101,9 @@ module.exports = function(robot) {
   robot.respond(/next track/i, function(message) {
     var printCurrentTrack;
     if (online) {
-      mopidy.playback.next();
+      mopidy.playback.next().then(function(data) {
+        return mopidy.playback.getCurrentTrack().then(printCurrentTrack, console.error.bind(console));
+      });
       printCurrentTrack = function(track) {
         if (track) {
           return message.send("Now playing: " + constructTrackDesc(track));
@@ -108,9 +112,8 @@ module.exports = function(robot) {
         }
       };
     } else {
-      message.send('Mopidy is offline');
+      return message.send('Mopidy is offline');
     }
-    return mopidy.playback.getCurrentTrack().then(printCurrentTrack, console.error.bind(console));
   });
 
   robot.respond(/mute/i, function(message) {
@@ -178,6 +181,27 @@ module.exports = function(robot) {
         mopidy.tracklist.add([track]).then(function(data) {
           console.log(data);
           mopidy.playback.play(data[0]);
+        });
+        return message.send("https://www.youtube.com/watch?v=" + data[0].tracks[0].comment);
+      });
+    } else {
+      return message.send('Mopidy is offline');
+    }
+  });
+
+  robot.respond(/queue (.*)/i, function(message) {
+    if (online) {
+      var query = message.match[1];
+      mopidy.library.search({
+        'any': [query]
+      }).then(function(data) {
+        var track = data[0].tracks[0];
+        console.log("searchresults:\n" + data);
+        mopidy.tracklist.index().then(function(idx) {
+          console.log(idx);
+          mopidy.tracklist.add([track], idx + 1).then(function(adddata) {
+            console.log(adddata);
+          });
         });
         return message.send("https://www.youtube.com/watch?v=" + data[0].tracks[0].comment);
       });
