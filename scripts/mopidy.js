@@ -151,7 +151,7 @@ module.exports = function(robot) {
 
   robot.respond(/shuffle music/i, function(message) {
     if (online) {
-      mopidy.tracklist.setRandom(true);
+      mopidy.tracklist.shuffle();
       return message.send('Now shuffling');
     } else {
       return message.send('Mopidy is offline');
