@@ -175,14 +175,17 @@ module.exports = function(robot) {
       var query = message.match[1];
       mopidy.library.search({
         'any': [query]
-      }).then(function(data) {
+      }, ["youtube:"]).then(function(data) {
         var track = data[0].tracks[0];
         console.log(data);
-        mopidy.tracklist.add([track]).then(function(data) {
-          console.log(data);
-          mopidy.playback.play(data[0]);
+        mopidy.tracklist.index().then(function(idx) {
+          console.log(idx);
+          mopidy.tracklist.add([track], idx + 1).then(function(data) {
+            console.log(data);
+            mopidy.playback.play(data[0]);
+          });
         });
-        return message.send("https://www.youtube.com/watch?v=" + data[0].tracks[0].comment);
+        return message.send("https://www.youtube.com/watch?v=" + track.comment);
       });
     } else {
       return message.send('Mopidy is offline');
@@ -194,7 +197,7 @@ module.exports = function(robot) {
       var query = message.match[1];
       mopidy.library.search({
         'any': [query]
-      }).then(function(data) {
+      }, ["youtube:"]).then(function(data) {
         var track = data[0].tracks[0];
         console.log("searchresults:\n" + data);
         mopidy.tracklist.index().then(function(idx) {
@@ -203,7 +206,7 @@ module.exports = function(robot) {
             console.log(adddata);
           });
         });
-        return message.send("https://www.youtube.com/watch?v=" + data[0].tracks[0].comment);
+        return message.send("https://www.youtube.com/watch?v=" + track.comment);
       });
     } else {
       return message.send('Mopidy is offline');
