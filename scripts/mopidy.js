@@ -1,3 +1,21 @@
+// Description:
+//   Mopidy interactions
+//
+// Dependencies:
+//
+// Commands:
+//   hubot set volume <#> - sets the current volume
+//   hubot volume? - displays the current volume
+//   hubot what's playing? - displays the current song
+//   hubot what's next? - displays the next song
+//   hubot next track - skips to the next song
+//   hubot shuffle music - shuffles the tracklist
+//   hubot search <query> - plays the first youtube video found
+//   hubot queue <query> - puts the first youtube video found next in the tracklist
+//
+// Author:
+//   bryan792
+
 var Mopidy, mopidy, online;
 
 Mopidy = require("mopidy");
@@ -116,55 +134,10 @@ module.exports = function(robot) {
     }
   });
 
-  robot.respond(/mute/i, function(message) {
-    if (online) {
-      mopidy.playback.setMute(true);
-      return message.send('Playback muted');
-    } else {
-      return message.send('Mopidy is offline');
-    }
-  });
-
-  robot.respond(/unmute/i, function(message) {
-    if (online) {
-      mopidy.playback.setMute(false);
-      return message.send('Playback unmuted');
-    } else {
-      return message.send('Mopidy is offline');
-    }
-  });
-
-  robot.respond(/pause music/i, function(message) {
-    if (online) {
-      mopidy.playback.pause();
-      return message.send('Music paused');
-    } else {
-      return message.send('Mopidy is offline');
-    }
-  });
-
-  robot.respond(/resume music/i, function(message) {
-    if (online) {
-      mopidy.playback.resume();
-      return message.send('Music resumed');
-    } else {
-      return message.send('Mopidy is offline');
-    }
-  });
-
   robot.respond(/shuffle music/i, function(message) {
     if (online) {
       mopidy.tracklist.shuffle();
       return message.send('Now shuffling');
-    } else {
-      return message.send('Mopidy is offline');
-    }
-  });
-
-  robot.respond(/stop shuffle/i, function(message) {
-    if (online) {
-      mopidy.tracklist.setRandom(false);
-      return message.send('Shuffling has been stopped');
     } else {
       return message.send('Mopidy is offline');
     }

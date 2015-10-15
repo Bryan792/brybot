@@ -16,6 +16,7 @@
     "hubot-scripts": "^2.16.2",
     "hubot-slack": "^3.3.0",
     "lodash": "^3.10.1",
+    "moment": "^2.10.6",
     "mopidy": "^0.5.0",
     "request": "^2.64.0",
     "request-promise": "^0.4.3"
