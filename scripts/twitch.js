@@ -24,14 +24,6 @@ module.exports = function(robot) {
     return robotResponse.reply("assigned " + twitchId + " as " + user.name + " twitch id");
   });
 
-  robot.respond(/(twitch|ttv) register <\@([\d]+)?> (\S+)$/i, function(robotResponse) {
-    var username = robotResponse.match[2];
-    var user = robot.brain.userForId(username);
-    var twitchId = robotResponse.match[3];
-    user.twitchId = twitchId;
-    return robotResponse.reply("assigned " + twitchId + " as " + user.name + " twitch id");
-  });
-
   setInterval(function() {
     _.forOwn(robot.brain.data.users, function(value, key) {
       var user = value;

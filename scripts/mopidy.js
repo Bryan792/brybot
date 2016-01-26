@@ -21,7 +21,8 @@ var Mopidy, mopidy, online;
 Mopidy = require("mopidy");
 
 mopidy = new Mopidy({
-  webSocketUrl: 'ws://localhost:6680/mopidy/ws/'
+  webSocketUrl: 'ws://localhost:6680/mopidy/ws/',
+  autoConnect: false
 });
 
 online = false;
