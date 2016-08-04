@@ -42,7 +42,7 @@ module.exports = function(robot) {
               //online
               var now = moment();
               if (!user.twitchLastNotify) {
-                robot.adapter.send(null, user.name + " start streaming:\n" + parsedBody.stream.channel.url);
+                robot.adapter.send(null, user.name + " started streaming:\n" + parsedBody.stream.channel.url);
                 console.log(stream + " is online");
                 console.log(moment(parsedBody.stream.created_at).fromNow());
                 user.twitchLastNotify = now;
@@ -51,6 +51,8 @@ module.exports = function(robot) {
               //offline
               delete user.twitchLastNotify;
             }
+          }).catch(function(err) {
+            console.log(err);
           });
       }
     });
